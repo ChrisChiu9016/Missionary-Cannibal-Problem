@@ -18,7 +18,7 @@ struct Node{
 	}
 };
 
-queue<Node> opened_list;
+deque<Node> opened_list;
 vector<int> closed_list;
 int m_num, c_num;
 
@@ -32,7 +32,7 @@ bool is_safe(Node* n){	// 判斷兩岸的傳教士是否安全
 		return false;
 	if(m_right<c_right && m_right!=0)	// 右岸食人魔數量不可超過傳教士數量，除非傳教士數量為0
 		return false;
-	if(m_left<0 || c_left<0)	// 
+	if(m_left<0 || c_left<0)
 		return false;
 	if(m_left>=c_left || m_right>=c_right)
 		return true;
@@ -50,7 +50,35 @@ bool in_closed_list(Node* node){	// 確認是否已經在closed_list內
 }
 
 void sort_by_floss(){	// 將opened_list內的點按照分數大小排序
-	
+	for(deque<Node>::iterator i=opened_list.begin(); i!=opened_list.end(); i++){
+		for(deque<Node>::iterator j=i+1; j!=opened_list.end(); j++){
+			if(i->f_loss>j->f_loss){
+				swap(i, j);
+			}
+			else if(i->step>j->step){
+				swap(i, j);
+			}
+		}
+	}
+}
+
+void swap(Node* a, Node* b){
+	Node* tmp;
+	memcpy(tmp, a, sizeof(Node));
+	memcpy(a, b, sizeof(Node));
+	memcpy(b, tmp, sizeof(Node));
+}
+
+void refresh_opened(Node* n){	// 如果有較低的分數，更新opened_list
+	for(deque<Node>::iterator it=opened_list.begin();it!=opened_list.end();it++){
+		if(it->m==n->m && it->c==n->c && it->b==n->b){
+			if(n->f_loss<it->f_loss){
+				memcpy(&it, n, sizeof(Node));
+			}
+			return;
+		}
+	}
+	opened_list.push_back(Node(n->m, n->c, n->b, n->step, n->parent));
 }
 
 Node* a_star_algorithm(){
@@ -58,7 +86,7 @@ Node* a_star_algorithm(){
 		// 從opened_list中取出分數最小的
 		Node* node;
 		memcpy(&node, &opened_list.front(), sizeof(Node));
-		opened_list.pop();
+		opened_list.pop_front();
 		// 判斷取出的點是否為目標點
 		if(node->m == 0 && node->c == 0 && node->b == 0){
 			return node;
@@ -101,7 +129,7 @@ int main(int argc, char const *argv[])
 	cout << "請輸入初始野人人數：";
 	cin >> c_num;
 
-	opened_list.push(Node(m_num, c_num, 0, 0, nullptr));
+	opened_list.push_back(Node(m_num, c_num, 0, 0, nullptr));
 	// Node* result = a_star_algorithm();
 	return 0;
 }
