@@ -93,10 +93,10 @@ void check_openlist()
  	cout << endl;
 }
 void check_closedlist()
-{
-	cout << &closed_list << endl << endl;
+{	
+	cout << "CLOSED LIST:\n";
+	cout << "STEP\tM_LEFT\tC_LEFT\tBOAT\tM_RIGHT\tC_RIGHT\tPARENT ADDRESS\n";
  	for(auto it:closed_list){
- 		cout << &it << " ";
   		print_node(&it);
  	}
 }
@@ -181,8 +181,8 @@ int main(int argc, char const *argv[]){
 
 	a_star_algorithm();
 
-	// check_closedlist();
-	output_result();
+	check_closedlist();
+	// output_result();
 
 	// m_num = 2;
 	// c_num = 0;
