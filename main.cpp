@@ -61,14 +61,16 @@ bool in_closed_list(Node* node){	// 確認是否已經在closed_list內
 	}
 	return false;
 }
-
+void check_openlist();
 void sort_by_floss(){	// 將opened_list內的點按照分數大小排序
+	check_openlist();
 	for(auto i=opened_list.begin(); i!=opened_list.end(); i++){
 		for(auto j=i+1; j!=opened_list.end(); j++){
-			if(j->f_loss>=i->f_loss){
+			if(j->step>=i->f_loss){
 				continue;
 			}
 			else{
+				cout << "swap" << endl;
 				swap(i, j);
 			}
 		}
@@ -95,15 +97,17 @@ void check_openlist()
 void check_closedlist()
 {	
 	cout << "CLOSED LIST:\n";
-	cout << "STEP\tM_LEFT\tC_LEFT\tBOAT\tM_RIGHT\tC_RIGHT\tPARENT ADDRESS\n";
- 	for(auto it:closed_list){
-  		print_node(&it);
+	cout << "ADDRESS\t\tSTEP\tM_LEFT\tC_LEFT\tBOAT\tM_RIGHT\tC_RIGHT\tPARENT ADDRESS\n";
+ 	for(int i=0; i<closed_list.size(); i++){
+ 		cout << &closed_list[i] << "\t";
+  		print_node(&closed_list[i]);
  	}
 }
 
 /* 主要演算法 */
 void a_star_algorithm(){
 	while(opened_list.size() != 0){
+		// check_openlist();
 		// 從opened_list中取出分數最小的
 		Node node;
 		node = opened_list.front();
@@ -112,9 +116,8 @@ void a_star_algorithm(){
 		// 將取出的點加入closed_list中
 		// closed_list.push_back(cal_value(&node));
 		closed_list.push_back(Node(node.m, node.c, node.b, node.step, node.parent));
-
 		// 判斷取出的點是否為目標點
-		if(node.m == 0 && node.c == 0 && node.b == 0){
+		if(node.m == 0 && node.c == 0){
 			break;
 		}
 
@@ -149,7 +152,6 @@ void a_star_algorithm(){
 			}
 		}
 		sort_by_floss();
-		// check_closedlist();
 	}
 
 }
@@ -176,18 +178,20 @@ int main(int argc, char const *argv[]){
 	cout << "請輸入初始野人人數：";
 	cin >> c_num;
 
+	closed_list.reserve((m_num+1) * (c_num+1) * 2 + 1);
 	Node start_node(m_num, c_num, 1, 0, nullptr);
 	opened_list.push_back(start_node);
 
 	a_star_algorithm();
 
-	check_closedlist();
+	// check_closedlist();
+	// cout << endl;
 	// output_result();
 
 	// m_num = 2;
 	// c_num = 0;
 	// Node a(2,0,0,0,nullptr);
 	// Node b(0,0,1,1,&a);
-	// output_result(b);
+	// output_result();
 	return 0;
 }
