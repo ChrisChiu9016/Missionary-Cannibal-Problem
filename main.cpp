@@ -1,14 +1,17 @@
 #include <iostream>
-#include <cstring>
+#include <cstdio>
+#include <fstream>
+#include <ctime>
 #include <deque>
 #include <vector>
-#include <algorithm>
 #include <Windows.h>
 
 using namespace std;
 
 #define A_MAX_CAPACITY 2
 #define B_MAX_CAPACITY 3
+#define OPENED_LIST_PATH "opened_list.txt"
+#define CLOSED_LIST_PATH "closed_list.txt"
 
 int m_num, c_num;	// 全部的傳教士、食人魔數量
 bool mode;			// true:最短步數 false:最少花費
@@ -32,7 +35,6 @@ struct Node{
 
 deque<Node> opened_list;
 vector<Node> closed_list;
-void print_node(Node* node);
 
 bool is_safe(Node* n){	// 判斷兩岸的傳教士是否安全
 	int m_left = n->m;
@@ -108,17 +110,7 @@ void refresh_opened(Node* n){	// 如果節點有較低的分數或步數，更�
 	}
 	opened_list.push_back(Node(n->m, n->c, n->a, n->b, n->step, n->cost, n->parent));
 }
-void check_openlist(){
- 	for(deque<Node>::iterator it=opened_list.begin(); it!=opened_list.end();it++){
-  		cout << it->m << " " << it->c << " " << it->b << " " << it->step<<"/";
- 	}
- 	cout << endl;
-}
-void check_closedlist(){	
- 	for(int i=0; i<closed_list.size(); i++){
-  		print_node(&closed_list[i]);
- 	}
-}
+
 /* 輸出類函式 */
 void print_node(Node* node){	// 印出節點資訊
 	printf("%d\t%d\t%d\t%s\t%s\t%d\t%d\t\n", 
@@ -139,10 +131,43 @@ void output_result(){
 		ptr = ptr->parent;
 	}
 }
+void fprint_node(FILE* fp, Node& node){
+	fprintf(fp, "%d\t%d\t%d\t%d\t%d\t%d\t%d\t\n", 
+		mode ? node.step:node.cost,
+		node.m, 
+		node.c, 
+		node.a,
+		node.b,
+		m_num-node.m,
+		c_num-node.c
+		);
+}
+void log_opened_list(FILE* fp){
+	fprintf(fp, "Choosed Node:\n");
+	fprint_node(fp, closed_list.back());
+	
+    fprintf(fp, "Opened List:\n");
+    for(auto node: opened_list){
+    	fprint_node(fp, node);
+    }
+    fprintf(fp, "\n");
+}
+void log_closed_list(FILE* fp){
+    fprintf(fp, "Closed List:\n");
+    for(auto node: closed_list){
+    	fprint_node(fp, node);
+    }
+    fprintf(fp, "\n");
+}
 /* 主要演算法 */
 void a_star_algorithm(){
+	FILE* f_opened = fopen(OPENED_LIST_PATH, "a+");
+	FILE* f_closed = fopen(CLOSED_LIST_PATH, "a+");
+	fseek(f_opened, 0, SEEK_SET);
+	fseek(f_closed, 0, SEEK_SET);
+
 	while(opened_list.size() != 0){
-		// check_openlist();
+		log_opened_list(f_opened);
 		// 從opened_list中取出分數最小的
 		Node node;
 		node = opened_list.front();
@@ -183,6 +208,7 @@ void a_star_algorithm(){
 			}
 		}
 		sort_bubble(opened_list);
+		log_closed_list(f_closed);
 	}
 
 }
