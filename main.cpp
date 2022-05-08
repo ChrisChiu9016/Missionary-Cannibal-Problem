@@ -153,7 +153,8 @@ void a_star_algorithm(){
 		closed_list.push_back(Node(node.m, node.c, node.a, node.b, node.step, node.cost, node.parent));
 		// 判斷取出的點是否為目標點
 		if(node.m == 0 && node.c == 0){
-			output_result();
+			//output_result();
+			return;
 		}
 
 		int carry_max_number = (A_MAX_CAPACITY>B_MAX_CAPACITY) ? A_MAX_CAPACITY : B_MAX_CAPACITY;
