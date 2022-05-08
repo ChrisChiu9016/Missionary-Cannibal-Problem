@@ -161,8 +161,8 @@ void log_closed_list(FILE* fp){
 }
 /* 主要演算法 */
 void a_star_algorithm(){
-	FILE* f_opened = fopen(OPENED_LIST_PATH, "a+");
-	FILE* f_closed = fopen(CLOSED_LIST_PATH, "a+");
+	FILE* f_opened = fopen(OPENED_LIST_PATH, "w");
+	FILE* f_closed = fopen(CLOSED_LIST_PATH, "w");
 	fseek(f_opened, 0, SEEK_SET);
 	fseek(f_closed, 0, SEEK_SET);
 
@@ -174,7 +174,6 @@ void a_star_algorithm(){
 		opened_list.pop_front();
 
 		// 將取出的點加入closed_list中
-		// closed_list.push_back(cal_value(&node));
 		closed_list.push_back(Node(node.m, node.c, node.a, node.b, node.step, node.cost, node.parent));
 		// 判斷取出的點是否為目標點
 		if(node.m == 0 && node.c == 0){
